@@ -1,0 +1,7 @@
+---
+name: "Eisenhower Prirority Labeler"
+description: "Labels issues with Eisenhower Priority"
+author: "Geek.Zone"
+runs:
+  using: "docker"
+  image: Dockerfile

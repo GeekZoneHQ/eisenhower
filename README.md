@@ -1,5 +1,6 @@
 # Eisenhower: Assign issue priority labels based on issue content
-Eisenhower is a GitHub action that adds Eisenhower matrix priority labels to issues based on the content of the issue.
+Eisenhower is a GitHub action that adds [Eisenhower matrix priority](https://youtu.be/tT89OZ7TNwc) 
+labels to issues based on the content of the issue.
 
 ## What it does
 
@@ -7,8 +8,6 @@ Eisenhower will take the following steps,
 - Look through all issues
 - Search for required string
 - Assign label based on string found. 
-
-Strings Eisenhower looks for are,
 
 IF
 
@@ -79,12 +78,53 @@ body:
 
 This ensures that all subsequent issues will have the strings that we need to search for.
 
-### Priority labels
-Add the following labels to your repo
-- P1
-- P2
-- P3
-- P4
+Any issues that do not feature the Impact and Urgency sections will be 
+assigned the label `P?` and have 
+the following appended to the issue body.
+> ### Impact
+> ?
+> 
+> ### Urgency
+> ?
+
+As GitHub actions currently offers no 
+cranial data integration, you will need to go back through these issues
+and complete those sections so that the correct Eisenhower labels can be 
+assigned.
+
+If you manually assign a P*x* label to an issue, Eisenhower will 
+remove it and replace it with the correct label, as defined by the issue body.
+
+### Labels
+If your repo does not already have P*x* labels, Eisenhower will create them.
+
+### Vars
+- `GITHUB_ACCESS_TOKEN`
+  - Your chosen bot user GitHub [personal access token](https://github.com/settings/tokens).
+  - access to edit issues at minimum.
+  - Organisation secret
+- .env(.example)
+  - This is for local development only.
+
+### Inputs
+Eisenhower takes no inputs.
+
+### Workflow
+```yml
+name: Eisenhower
+on:
+  issues:
+    types: [opened, edited]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Run Eisenhower action
+      uses: GeekZoneHQ/eisenhower@main
+      with:
+        path: path/to/my/yaml/file.yaml
+```
 
 ## Thanks
 Big thanks to,
