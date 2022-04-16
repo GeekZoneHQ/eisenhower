@@ -116,7 +116,9 @@ def get_label_names(labels):
 
 def add_form_to_body(current_body):
     form = "\n\n" "### Impact\n\n" "?\n\n" "### Urgency\n\n" "?"
-    return current_body + form
+    if current_body is not None:
+        return current_body + form
+    return form
 
 
 def check_labels():
