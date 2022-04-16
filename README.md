@@ -118,11 +118,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GH_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+      GH_REPOSITORY: ${{ github.repository }}
     steps:
     - name: Run Eisenhower action
       uses: GeekZoneHQ/eisenhower@main
-      with:
-        path: path/to/my/yaml/file.yaml
 ```
 
 ## Thanks
