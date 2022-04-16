@@ -99,10 +99,10 @@ remove it and replace it with the correct label, as defined by the issue body.
 If your repo does not already have P*x* labels, Eisenhower will create them.
 
 ### Vars
-- `GITHUB_ACCESS_TOKEN`
+- `GH_ACCESS_TOKEN`
   - Your chosen bot user GitHub [personal access token](https://github.com/settings/tokens).
   - access to edit issues at minimum.
-  - Organisation secret
+  - repo secret
 - .env(.example)
   - This is for local development only.
 
@@ -119,7 +119,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      GH_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+      GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
       GH_REPOSITORY: ${{ github.repository }}
     steps:
     - name: Run Eisenhower action
