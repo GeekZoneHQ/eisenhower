@@ -1,11 +1,11 @@
-FROM python:latest AS builder
-ADD . /app
-WORKDIR /app
+FROM python:latest
 
-# We are installing a dependency here directly into our app source dir
-RUN pip install --target=/app requests
-RUN pip install --upgrade PyGitHub
-COPY --from=builder /app /app
-WORKDIR /app
-ENV PYTHONPATH /app
-CMD ["/app/main.py"]
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Install dependencies:
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+CMD ["python", "main.py"]
