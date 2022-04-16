@@ -6,11 +6,11 @@ import os
 dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
-GITHUB_ACCESS_TOKEN = os.getenv("GITHUB_ACCESS_TOKEN")
-GITHUB_REPO_NAME = os.getenv("GITHUB_REPO_NAME")
+GH_ACCESS_TOKEN = os.getenv("GH_ACCESS_TOKEN")
+GH_REPOSITORY = os.getenv("GH_REPOSITORY")
 
-gh = Github(GITHUB_ACCESS_TOKEN)
-repo = gh.get_repo(GITHUB_REPO_NAME)
+gh = Github(GH_ACCESS_TOKEN)
+repo = gh.get_repo(GH_REPOSITORY)
 
 
 POSSIBLE_PRIORITIES = [

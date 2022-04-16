@@ -10,6 +10,5 @@ RUN pip install --target=/app requests
 FROM gcr.io/distroless/python3-debian10
 COPY --from=builder /app /app
 WORKDIR /app
-ENV GITHUB_REPO_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print$2}')" >> $GITHUB_ENV shell: bash
 ENV PYTHONPATH /app
 CMD ["/app/main.py"]
