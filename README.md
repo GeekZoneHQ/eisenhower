@@ -119,7 +119,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
     - name: Run Eisenhower action
       uses: GeekZoneHQ/eisenhower@main
       with:
