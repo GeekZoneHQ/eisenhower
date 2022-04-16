@@ -1,5 +1,7 @@
 FROM python:latest
 
+RUN mkdir "/opt"
+RUN mkdir "/opt/venv"
 RUN mkdir "/opt/venv/bin"
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
