@@ -103,6 +103,7 @@ If your repo does not already have P*x* labels, Eisenhower will create them.
   - Your chosen bot user GitHub [personal access token](https://github.com/settings/tokens).
   - access to edit issues at minimum.
   - repo secret
+- `GH_REPOSITORY` and `GH_ISSUE_NUMBER` are provided by the GitHub context, but do still need to be included.
 - .env(.example)
   - This is for local development only.
 
@@ -110,19 +111,24 @@ If your repo does not already have P*x* labels, Eisenhower will create them.
 Eisenhower takes no inputs.
 
 ### Workflow
+
+Copypasta this to [repo]/.github/workflows/eisenhower.yml
+
 ```yml
 name: Eisenhower
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, reopened, edited]
+env:
+  GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+  GH_REPOSITORY: ${{ github.repository }}
+  GH_ISSUE_NUMBER: ${{ github.event.issue.number }}    
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
-      GH_REPOSITORY: ${{ github.repository }}
+
     steps:
-    - name: Run Eisenhower action
+    - name: Prioritize issue with Geek.Zone Eisenhower
       uses: GeekZoneHQ/eisenhower@main
 ```
 
