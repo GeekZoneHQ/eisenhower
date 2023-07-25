@@ -1,13 +1,8 @@
-FROM python:latest
+FROM python:3.10-alpine
 
-RUN mkdir "/opt/venv"
-RUN mkdir "/opt/venv/bin"
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="/opt/venv/bin:$PATH"
+WORKDIR /app
 
-# Install dependencies:
 COPY requirements.txt .
-COPY main.py ./opt/venv/bin/
+COPY main.py .
 RUN pip install -r requirements.txt
-CMD ["/opt/venv/bin/python3", "/opt/venv/bin/main.py"]
+CMD ["python3", "main.py"]
