@@ -1,13 +1,14 @@
 from github import Github
 import logging
 import dotenv
-import os
+from os import getenv
 
 dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
-GH_ACCESS_TOKEN = os.getenv("GH_ACCESS_TOKEN")
-GH_REPOSITORY = os.getenv("GH_REPOSITORY")
+GH_ACCESS_TOKEN = str(getenv("GH_ACCESS_TOKEN"))
+GH_REPOSITORY = str(getenv("GH_REPOSITORY"))
+GH_ISSUE_NUMBER = int(getenv("GH_ISSUE_NUMBER"))
 
 gh = Github(GH_ACCESS_TOKEN)
 repo = gh.get_repo(GH_REPOSITORY)
@@ -124,42 +125,41 @@ def add_form_to_body(current_body):
 def check_labels():
     repo_labels = get_label_names(repo.get_labels())
     for label in POSSIBLE_PRIORITIES:
-        if label[0] not in repo_labels:
-            logging.info("Creating label " + label[0])
-            repo.create_label(name=label[0],
-                              color=label[1],
-                              description=label[2])
+        if label[0] in repo_labels:
+            continue
+        logging.info("Creating label " + label[0])
+        repo.create_label(name=label[0],
+                          color=label[1],
+                          description=label[2])
     return 0
 
 
 def main():
+    logging.info(f"Prioritising issue {GH_ISSUE_NUMBER}")
     check_labels()
-    open_issues = repo.get_issues(state="open")
-    for issue in open_issues:
-        logging.info("Checking issue " + str(issue.number))
-        if issue.pull_request is not None:
-            logging.info("Skipping pull request")
-            continue
-        body_priority = priority(issue.body)
-        if body_priority == -2:
-            new_body = add_form_to_body(issue.body)
-            issue.edit(body=new_body)
-        body_priority_label = priority_label(body_priority)
-        logging.info(
-            "Issue #" + str(issue.number) + " = " + body_priority_label
-        )
+    issue = repo.get_issue(number=GH_ISSUE_NUMBER)
+    if issue.pull_request is not None:
+        logging.info("Skipping pull request")
+        return 0
+    body_priority = priority(issue.body)
+    if body_priority == -2:
+        new_body = add_form_to_body(issue.body)
+        issue.edit(body=new_body)
+    body_priority_label = priority_label(body_priority)
+    logging.info(f"Issue #{str(issue.number)}={body_priority_label}")
 
-        existing_labels = sorted(get_label_names(issue.labels))
-        logging.info("Current labels = " + str(existing_labels))
+    existing_labels = sorted(get_label_names(issue.labels))
+    logging.info(f"Current labels={str(existing_labels)}")
 
-        out_labels = sorted(required_labels(existing_labels, body_priority_label))
-        logging.info("Required labels = " + str(out_labels))
+    out_labels = sorted(required_labels(existing_labels, body_priority_label))
+    logging.info(f"Required labels={str(out_labels)}")
 
-        if existing_labels != out_labels:
-            logging.info("Updating labels")
-            issue.set_labels(*out_labels)
-        logging.info("Completed issue #" + str(issue.number))
+    if existing_labels != out_labels:
+        logging.info("Updating labels")
+        issue.set_labels(*out_labels)
+    logging.info(f"Completed issue #{str(issue.number)}")
     return 0
 
 
-main()
+if __name__ == "__main__":
+    main()
