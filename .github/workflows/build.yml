@@ -1,0 +1,51 @@
+---
+name: Docker build, scan and push on main merge
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ORG: geekzone
+  IMAGE: ${{ env.ORG }}/${{ github.repository_name }}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: ${{ env.IMAGE }}:latest
+          load: true
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: ${{ env.IMAGE }}:latest
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag Docker image
+        run: |
+          docker tag ${{ env.IMAGE }}:latest ${{ env.IMAGE }}:${{ github.run_number }}
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.IMAGE }}:latest
+          docker push ${{ env.IMAGE }}:${{ github.run_number }}
