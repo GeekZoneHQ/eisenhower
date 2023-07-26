@@ -6,8 +6,7 @@ on:
       - main
 
 env:
-  ORG: geekzone
-  IMAGE: ${{ env.ORG }}/${{ github.event.repository.name }}
+  IMAGE: geekzone/${{ github.event.repository.name }}
   RUN: ${{ github.run_number }}
 
 jobs:
