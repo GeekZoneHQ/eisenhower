@@ -9,14 +9,22 @@ env:
   IMAGE: geekzone/${{ github.event.repository.name }}
   RUN: ${{ github.run_number }}
 
+permissions:
+  contents: write
+
+
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Set version number
+        id: version
+        run: echo "VERSION_NUMBER=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run Snyk to check for vulnerabilities
+      - name: Run Snyk to check static code for vulnerabilities
         uses: snyk/actions/python-3.10@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -51,9 +59,22 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag ${{ env.IMAGE }}:latest ${{ env.IMAGE }}:${{ env.RUN }}
+          docker tag ${{ env.IMAGE }}:latest ${{ env.IMAGE }}:${{ env.VERSION_NUMBER }}
 
       - name: Push Docker image
         run: |
           docker push ${{ env.IMAGE }}:latest
-          docker push ${{ env.IMAGE }}:${{ env.RUN }}
+          docker push ${{ env.IMAGE }}:${{ env.VERSION_NUMBER }}
+
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: v${{ env.VERSION_NUMBER }}
+          name: Release v${{ env.VERSION_NUMBER }}
+          draft: false
+          prerelease: false
+          makeLatest: true
+          commit: ${{ github.sha }}
