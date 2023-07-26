@@ -4,4 +4,4 @@ description: "Label issues with Eisenhower Priority"
 author: "Geek.Zone"
 runs:
   using: "docker"
-  image: geekzone/eisenhower:latest
+  image: "docker://geekzone/eisenhower:latest"
